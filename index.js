@@ -19,8 +19,13 @@ const client = new MongoClient(uri, {
 
 async function run(){
   try{
+
+    // collections
     const serviceCollection = client.db('karata').collection('allServices');
     const reviewCollection = client.db('karata').collection('reviews')
+
+     //------------------------------------------//
+     // service collection api 
 
     // get all services from db 
     app.get('/services', async(req,res)=>{
@@ -44,7 +49,13 @@ async function run(){
       const result = await serviceCollection.findOne(query)
       res.send(result)
     })
+       // service collection api 
+     //------------------------------------------//
 
+
+
+    //------------------------------------------//
+    // review collection api 
     // get a name specific review from db and send to client 
     app.get('/reviews', async(req,res)=>{
       let query = {};
@@ -57,6 +68,16 @@ async function run(){
       const result = await cursor.toArray()
       res.send(result)
     })
+
+    // age a review from client and save to db 
+    app.post('/reviews', async(req,res)=>{
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    })
+
+     // review collection api 
+    //------------------------------------------//
 
   }
   catch{
