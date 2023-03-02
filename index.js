@@ -49,7 +49,15 @@ async function run(){
       const result = await serviceCollection.findOne(query)
       res.send(result)
     })
-       // service collection api 
+
+    // add a new service 
+    app.post('/services/post', async(req,res)=>{
+      const service = req.body;
+      const result = await serviceCollection.insertOne(service);
+      res.send(result);
+    })
+
+      // service collection api 
      //------------------------------------------//
 
 
@@ -73,6 +81,43 @@ async function run(){
     app.post('/reviews', async(req,res)=>{
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    })
+
+    // get a users all review 
+    app.get('/reviewsquery', async(req,res)=>{
+      let query = {};
+      if(req.query.email){
+        query = {
+          email : req.query.email
+        }
+      }
+      const cursor = reviewCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+    // delete a specific review 
+    app.delete('/review/:id', async(req,res)=>{
+      const id = req.params.id; 
+      const query = {_id: new ObjectId(id)}
+      const result = await reviewCollection.deleteOne(query);
+      res.send(result)
+    })
+
+    // update a review 
+    app.put('/update/:id', async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:new ObjectId(id)}
+      const user = req.body;
+      const option = { upsert: true}
+      const updateUserReview = {
+        $set: {
+          review: user.newReview
+        }
+      }
+      const result = await reviewCollection.updateOne(filter,updateUserReview,option)
+      console.log(result);
       res.send(result);
     })
 
